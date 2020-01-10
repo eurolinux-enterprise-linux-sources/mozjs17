@@ -1,7 +1,7 @@
 Summary:	JavaScript interpreter and libraries
 Name:		mozjs17
 Version:	17.0.0
-Release:	10%{?dist}
+Release:	12%{?dist}
 License:	GPLv2+ or LGPLv2+ or MPLv1.1
 Group:		Development/Languages
 URL:		http://www.mozilla.org/js/
@@ -17,6 +17,8 @@ Patch0:		js17-build-fixes.patch
 Patch1:		js17-jsval.patch
 Patch2:         mozbug746112-no-decommit-on-large-pages.patch
 Patch3:         0001-Move-JS_BYTES_PER_WORD-out-of-config.h.patch
+Patch4:         mozjs17-aarch64.patch
+Patch5:		mozjs17-aarch64-support-64K-pages.patch
 
 %description
 JavaScript is the Netscape-developed object scripting language used in millions
@@ -42,11 +44,13 @@ rm js/src/ctypes/libffi -rf
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-chmod a+x configure
-(cd js/src && autoconf-2.13)
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
+chmod a+x configure
+(cd js/src && autoconf-2.13)
 %configure --disable-static --with-system-nspr --enable-threadsafe --enable-readline
 make %{?_smp_mflags}
 
@@ -85,6 +89,11 @@ rm -f %{buildroot}%{_bindir}/js17-config
 %{_includedir}/js-17.0
 
 %changelog
+* Fri Jul 11 2014 Colin Walters <walters@redhat.com> - 17.0.0-12
+- Add patch for aarch64
+- Fix for aarch64 64k pagesize. BZ#1076181 (Mark Salter <msalter@redhat.com>)
+- Resolves: #1027067
+
 * Tue Mar 18 2014 Colin Walters <walters@redhat.com> - 17.0.0-10
 - Add patch to fix multilib conflict with -devel packages
 - Resolves: #1076420
