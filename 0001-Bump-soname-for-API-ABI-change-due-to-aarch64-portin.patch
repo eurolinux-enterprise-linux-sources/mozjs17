@@ -1,0 +1,25 @@
+From 5a001f30574a6265dbf9b480cd0189169f1b121f Mon Sep 17 00:00:00 2001
+From: Colin Walters <walters@verbum.org>
+Date: Fri, 27 May 2016 16:14:35 -0400
+Subject: [PATCH] Bump soname for API/ABI change due to aarch64 porting
+
+---
+ js/src/Makefile.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/js/src/Makefile.in b/js/src/Makefile.in
+index 9c58960..1edf9b5 100644
+--- a/js/src/Makefile.in
++++ b/js/src/Makefile.in
+@@ -35,7 +35,7 @@ TEST_DIRS += tests
+ 
+ ifdef JS_STANDALONE
+ MODULE		    = js-@MOZJS_MAJOR_VERSION@.@MOZJS_MINOR_VERSION@@MOZJS_ALPHA@
+-LIBRARY_NAME	    = mozjs-@MOZJS_MAJOR_VERSION@.@MOZJS_MINOR_VERSION@@MOZJS_ALPHA@
++LIBRARY_NAME	    = mozjs-@MOZJS_MAJOR_VERSION@.@MOZJS_MINOR_VERSION@@MOZJS_ALPHA@.1
+ else
+ LIBRARY_NAME	    = mozjs
+ MODULE		    = js
+-- 
+1.8.3.1
+
