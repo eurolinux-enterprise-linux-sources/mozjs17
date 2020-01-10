@@ -1,7 +1,7 @@
 Summary:	JavaScript interpreter and libraries
 Name:		mozjs17
 Version:	17.0.0
-Release:	19%{?dist}
+Release:	20%{?dist}
 License:	GPLv2+ or LGPLv2+ or MPLv1.1
 Group:		Development/Languages
 URL:		http://www.mozilla.org/js/
@@ -19,15 +19,7 @@ Patch2:         mozbug746112-no-decommit-on-large-pages.patch
 Patch3:         0001-Move-JS_BYTES_PER_WORD-out-of-config.h.patch
 Patch4:         mozjs17-aarch64.patch
 Patch5:		mozjs17-aarch64-support-64K-pages.patch
-# This changes the API/ABI, which we're currently only doing for aarch64
-# https://bugzilla.redhat.com/show_bug.cgi?id=1324216
-%ifarch aarch64
-%global fortyeightbitva_patch 1
-%else
-%global fortyeightbitva_patch 0
-%endif
-Patch6:         mozjs17-aarch64-48bit-va-limits.patch
-Patch7:         0001-Bump-soname-for-API-ABI-change-due-to-aarch64-portin.patch
+Patch6:         mozjs17-48-bit-VA-fix.patch
 
 %description
 JavaScript is the Netscape-developed object scripting language used in millions
@@ -56,10 +48,7 @@ rm js/src/ctypes/libffi -rf
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%if 0%{fortyeightbitva_patch}
 %patch6 -p1
-%patch7 -p1
-%endif
 
 %build
 chmod a+x configure
@@ -89,13 +78,6 @@ rm -f %{buildroot}%{_bindir}/js17
 # the pkg-config file.
 rm -f %{buildroot}%{_bindir}/js17-config
 
-# We do not want the full soname embedded in the .pc file since
-# that forces consumers to have architecture-dependent source patches
-# to find it.  All we want is a forced rebuild.
-%if 0%{fortyeightbitva_patch}
-mv %{buildroot}%{_libdir}/pkgconfig/mozjs-17.0{.1,}.pc
-%endif
-
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
@@ -109,6 +91,12 @@ mv %{buildroot}%{_libdir}/pkgconfig/mozjs-17.0{.1,}.pc
 %{_includedir}/js-17.0
 
 %changelog
+* Tue Mar 28 2017 Yaakov Selkowitz <yselkowi@redhat.com> - 17.0.0-20
+- Switch to upstream aarch64 48bit VA patch
+  This reverts the previous API/ABI break on aarch64, so dependencies
+  must be rebuilt again.
+- Resolves: #1393548
+
 * Thu May 26 2016 Colin Walters <walters@redhat.com> - 17.0.0-16
 - Add patch for aarch64 48bit VA limits
   This changes the API/ABI only on aarch64, and hence we also bump
